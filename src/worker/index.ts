@@ -1,6 +1,6 @@
 import { EventMap, WorkerRequest, WorkerResponse } from "../types";
 
-export default class WorkerBridge<M extends EventMap> {
+export class WorkerBridge<M extends EventMap> {
   private handlers: Map<keyof M, M[keyof M]> = new Map();
 
   constructor() {
