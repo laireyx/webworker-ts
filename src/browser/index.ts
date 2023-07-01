@@ -6,7 +6,7 @@ import {
 } from "../types";
 
 type PendingTask<M extends EventMap, E extends keyof M> = {
-  resolve: (value: ReturnType<M[E]>) => void;
+  resolve: (value: Awaited<ReturnType<M[E]>>) => void;
   reject: (reason?: any) => void;
 };
 
@@ -30,7 +30,7 @@ export class BrowserBridge<M extends EventMap = EventMapWithArgs> {
   task<E extends keyof M>(
     eventType: E,
     ...args: Parameters<M[E]>
-  ): Promise<ReturnType<M[E]>> {
+  ): Promise<Awaited<ReturnType<M[E]>>> {
     const eventSeq = this.eventSeq++;
 
     const taskItem: PendingTask<M, E> = {
@@ -42,9 +42,11 @@ export class BrowserBridge<M extends EventMap = EventMapWithArgs> {
       },
     };
 
-    const taskPromise = new Promise<ReturnType<M[E]>>((resolve, reject) => {
-      Object.assign(taskItem, { resolve, reject });
-    });
+    const taskPromise = new Promise<Awaited<ReturnType<M[E]>>>(
+      (resolve, reject) => {
+        Object.assign(taskItem, { resolve, reject });
+      }
+    );
 
     this.pendingTasks.set(eventSeq, taskItem);
 

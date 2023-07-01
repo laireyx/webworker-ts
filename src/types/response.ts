@@ -7,7 +7,7 @@ export interface WorkerResponse<M extends EventMap, T extends keyof M> {
   result:
     | {
         success: true;
-        response: ReturnType<M[T]>;
+        response: Awaited<ReturnType<M[T]>>;
       }
     | {
         success: false;
